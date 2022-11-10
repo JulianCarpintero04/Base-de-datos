@@ -5,92 +5,88 @@ SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
 
 -- -----------------------------------------------------
--- Schema PortafolioWeb
+-- Schema BaseDeDatosFinal
 -- -----------------------------------------------------
 
 -- -----------------------------------------------------
--- Schema PortafolioWeb
+-- Schema BaseDeDatosFinal
 -- -----------------------------------------------------
-CREATE SCHEMA IF NOT EXISTS `PortafolioWeb` DEFAULT CHARACTER SET utf8 ;
-USE `PortafolioWeb` ;
+CREATE SCHEMA IF NOT EXISTS `BaseDeDatosFinal` DEFAULT CHARACTER SET utf8 ;
+USE `BaseDeDatosFinal` ;
 
 -- -----------------------------------------------------
--- Table `PortafolioWeb`.`contenido`
+-- Table `BaseDeDatosFinal`.`usuario`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `PortafolioWeb`.`contenido` (
+CREATE TABLE IF NOT EXISTS `BaseDeDatosFinal`.`usuario` (
   `id` INT NOT NULL,
+  `email` VARCHAR(45) NOT NULL,
+  `usuariocol` VARCHAR(45) NOT NULL,
+  `soyadmin` TINYINT NOT NULL,
   PRIMARY KEY (`id`))
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `PortafolioWeb`.`usuario`
+-- Table `BaseDeDatosFinal`.`curso`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `PortafolioWeb`.`usuario` (
-  `id` INT NOT NULL,
-  `email` VARCHAR(45) NOT NULL,
-  `contraseña` VARCHAR(45) NOT NULL,
-  `contenido_id` INT NOT NULL,
-  PRIMARY KEY (`id`),
-  INDEX `fk_usuario_contenido_idx` (`contenido_id` ASC) VISIBLE,
-  CONSTRAINT `fk_usuario_contenido`
-    FOREIGN KEY (`contenido_id`)
-    REFERENCES `PortafolioWeb`.`contenido` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
--- Table `PortafolioWeb`.`proyecto`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `PortafolioWeb`.`proyecto` (
-  `id` INT NOT NULL,
-  `desarrollo` VARCHAR(200) NOT NULL,
-  `url` VARCHAR(100) NULL,
-  `contenido_id` INT NOT NULL,
-  PRIMARY KEY (`id`),
-  INDEX `fk_proyecto_contenido1_idx` (`contenido_id` ASC) VISIBLE,
-  CONSTRAINT `fk_proyecto_contenido1`
-    FOREIGN KEY (`contenido_id`)
-    REFERENCES `PortafolioWeb`.`contenido` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
--- Table `PortafolioWeb`.`curso`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `PortafolioWeb`.`curso` (
+CREATE TABLE IF NOT EXISTS `BaseDeDatosFinal`.`curso` (
   `id` INT NOT NULL,
   `desarrollo` VARCHAR(200) NOT NULL,
   `url` VARCHAR(100) NOT NULL,
-  `contenido_id` INT NOT NULL,
-  PRIMARY KEY (`id`),
-  INDEX `fk_curso_contenido1_idx` (`contenido_id` ASC) VISIBLE,
-  CONSTRAINT `fk_curso_contenido1`
-    FOREIGN KEY (`contenido_id`)
-    REFERENCES `PortafolioWeb`.`contenido` (`id`)
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `BaseDeDatosFinal`.`proyecto`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `BaseDeDatosFinal`.`proyecto` (
+  `id` INT NOT NULL,
+  `desarrollo` VARCHAR(200) NOT NULL,
+  `url` VARCHAR(100) NOT NULL,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `BaseDeDatosFinal`.`curso_has_usuario`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `BaseDeDatosFinal`.`curso_has_usuario` (
+  `curso_id` INT NOT NULL,
+  `usuario_id` INT NOT NULL,
+  PRIMARY KEY (`curso_id`, `usuario_id`),
+  INDEX `fk_curso_has_usuario_usuario1_idx` (`usuario_id` ASC) VISIBLE,
+  INDEX `fk_curso_has_usuario_curso_idx` (`curso_id` ASC) VISIBLE,
+  CONSTRAINT `fk_curso_has_usuario_curso`
+    FOREIGN KEY (`curso_id`)
+    REFERENCES `BaseDeDatosFinal`.`curso` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_curso_has_usuario_usuario1`
+    FOREIGN KEY (`usuario_id`)
+    REFERENCES `BaseDeDatosFinal`.`usuario` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `PortafolioWeb`.`administrador`
+-- Table `BaseDeDatosFinal`.`proyecto_has_usuario`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `PortafolioWeb`.`administrador` (
-  `id` INT NOT NULL,
-  `email` VARCHAR(45) NOT NULL,
-  `contraseña` VARCHAR(45) NOT NULL,
-  `modoeditor` TINYINT NOT NULL,
-  `contenido_id` INT NOT NULL,
-  PRIMARY KEY (`id`, `email`),
-  INDEX `fk_administrador_contenido1_idx` (`contenido_id` ASC) VISIBLE,
-  CONSTRAINT `fk_administrador_contenido1`
-    FOREIGN KEY (`contenido_id`)
-    REFERENCES `PortafolioWeb`.`contenido` (`id`)
+CREATE TABLE IF NOT EXISTS `BaseDeDatosFinal`.`proyecto_has_usuario` (
+  `proyecto_id` INT NOT NULL,
+  `usuario_id` INT NOT NULL,
+  PRIMARY KEY (`proyecto_id`, `usuario_id`),
+  INDEX `fk_proyecto_has_usuario_usuario1_idx` (`usuario_id` ASC) VISIBLE,
+  INDEX `fk_proyecto_has_usuario_proyecto1_idx` (`proyecto_id` ASC) VISIBLE,
+  CONSTRAINT `fk_proyecto_has_usuario_proyecto1`
+    FOREIGN KEY (`proyecto_id`)
+    REFERENCES `BaseDeDatosFinal`.`proyecto` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_proyecto_has_usuario_usuario1`
+    FOREIGN KEY (`usuario_id`)
+    REFERENCES `BaseDeDatosFinal`.`usuario` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
